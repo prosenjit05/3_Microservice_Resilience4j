@@ -1,5 +1,6 @@
 package com.microservice.Bank_Service.controller;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,11 @@ public class BankServiceController {
 
     String customerServiceUrl = "http://localhost:9192/customerSvc/getCustomerDetails";
 
+    // This value will be used in the application.yml file
+    public static final String bankSvcCB = "BankServiceCircuitBreaker";
+
     @GetMapping("/getBankCards")
+    @CircuitBreaker(name = bankSvcCB, fallbackMethod = "getCustomerDetails")
     public ResponseEntity<String> getBankCards() {
         String cusSvcResp = "";
 
@@ -29,6 +34,10 @@ public class BankServiceController {
         String bankSvcResp = "Bank_Service Response -> Customer_Service Response: " + cusSvcResp;
 
         return ResponseEntity.ok(bankSvcResp);
+    }
+
+    public ResponseEntity<String> getCustomerDetails(Exception ex){
+        return ResponseEntity.ok("Circuit Breaker Response");
     }
 
 }
