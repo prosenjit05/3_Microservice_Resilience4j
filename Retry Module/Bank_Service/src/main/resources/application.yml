@@ -1,0 +1,23 @@
+
+server:
+  port: 9191
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+#Retry Configuration
+resilience4j:
+  retry:
+    instances:
+      BankServiceRetry:
+        maxRetryAttempts: 6
+        waitDuration: 10s
+
